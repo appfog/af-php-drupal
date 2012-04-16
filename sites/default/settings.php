@@ -1,5 +1,7 @@
 <?php
 
+ini_set('apc.cache_by_default','Off');
+
 /**
  * @file
  * Drupal site-specific configuration file.
@@ -200,7 +202,21 @@
  *   );
  * @endcode
  */
+$services = getenv("VCAP_SERVICES");
+$services_json = json_decode($services,true);
+$mysql_config = $services_json["mysql-5.1"][0]["credentials"];
+
 $databases = array();
+
+$databases['default']['default'] = array(
+  'driver' => 'mysql',
+  'database' => $mysql_config["name"],
+  'username' => $mysql_config["user"],
+  'password' => $mysql_config["password"],
+  'host' => $mysql_config["hostname"],
+  'port' => $mysql_config["port"],
+  'prefix' => '',
+);
 
 /**
  * Access control for update.php script.

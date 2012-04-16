@@ -164,10 +164,16 @@ function lock_acquire($name, $timeout = 30.0) {
  *   TRUE if there is no lock or it was removed, FALSE otherwise.
  */
 function lock_may_be_available($name) {
-  $lock = db_query('SELECT expire, value FROM {semaphore} WHERE name = :name', array(':name' => $name))->fetchAssoc();
-  if (!$lock) {
-    return TRUE;
+  try {
+    $lock = db_query('SELECT expire, value FROM {semaphore} WHERE name = :name', array(':name' => $name))->fetchAssoc();
+    if (!$lock) {
+      return TRUE;
+    }
+  } catch (PDOException $e) {
+    header("Location: /install.php");
+    exit(0);
   }
+
   $expire = (float) $lock['expire'];
   $now = microtime(TRUE);
   if ($now > $expire) {
