@@ -173,7 +173,6 @@ function lock_may_be_available($name) {
     header("Location: /install.php");
     exit(0);
   }
-
   $expire = (float) $lock['expire'];
   $now = microtime(TRUE);
   if ($now > $expire) {
